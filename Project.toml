@@ -1,7 +1,7 @@
 name = "NearlyIsotonicRegression"
 uuid = "8ffeb364-5e46-4a19-b908-271cdb64df64"
 authors = ["yutomiyatake <yuto.miyatake.cmc@osaka-u.ac.jp> and contributors"]
-version = "1.0.0"
+version = "0.1.0"
 
 [deps]
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
