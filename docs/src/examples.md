@@ -3,7 +3,7 @@
 ## Standard isotonic regression
 
 ```
-julia> using IsoFuns
+julia> using NearlyIsotonicRegression
 
 julia> n = 5
 5
@@ -16,7 +16,7 @@ julia> x = (1:n)/n + randn(n)
  0.440015631618591
  1.1163182317933293
 
-julia> y = iso(x)
+julia> y = isotonic_regression(x)
 5-element Vector{Float64}:
  0.3699964921192127
  0.3699964921192127
@@ -57,7 +57,7 @@ plot!(y,label="λ=1.0")
 ![](figures/binomial1.svg)
 
 ```
-aic_λ,aic_value=IsoFuns.neariso_AIC_Binomial(success,trial)
+aic_λ,aic_value=NearlyIsotonicRegression.neariso_AIC_Binomial(success,trial)
 plot(aic_λ,aic_value,xlabel="λ",ylabel="AIC")
 ```
 

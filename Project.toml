@@ -1,13 +1,14 @@
-name = "IsoFuns"
+name = "NearlyIsotonicRegression"
 uuid = "8ffeb364-5e46-4a19-b908-271cdb64df64"
-authors = ["yutomiyatake <miyatake@cas.cmc.osaka-u.ac.jp> and contributors"]
-version = "1.0.0-DEV"
+authors = ["yutomiyatake <yuto.miyatake.cmc@osaka-u.ac.jp> and contributors"]
+version = "1.0.0"
 
 [deps]
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [compat]
 julia = "1.6"
+SpecialFunctions = "1, 2"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

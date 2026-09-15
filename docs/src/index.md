@@ -1,43 +1,43 @@
 ```@meta
-CurrentModule = IsoFuns
+CurrentModule = NearlyIsotonicRegression
 ```
 
-# Isotonic regression and its generalizations
+# NearlyIsotonicRegression.jl
 
-IsoFuns.jl provides basic functions for solving isotonic regression problems:
+NearlyIsotonicRegression.jl implements isotonic and nearly isotonic regression:
 
-+ (standard) isotonic regression problem
-+ generalized isotonic regression problem
-+ nearly isotonic regression problem
-+ generalized nearly isotonic regression problem
+- standard and weighted isotonic regression
+- generalized isotonic regression
+- standard and weighted nearly isotonic regression
+- generalized nearly isotonic regression
 
 ## Installation
 
-Run Julia, enter ] to bring up Julia's package manager, and add the IsoFuns.jl package:
+From the Julia package prompt, run:
 
-```
-julia> ]
-(v1.9) pkg> add https://github.com/yutomiyatake/IsoFuns.jl
+```julia
+pkg> add NearlyIsotonicRegression
 ```
 
 ## Simple examples
 
-```
-using IsoFuns
+```julia
+using NearlyIsotonicRegression
 
 n = 10
 x = (1:n)/n + randn(n)
-y = iso(x)
+y = isotonic_regression(x)
 ```
+
+The original short names `iso`, `iso!`, `neariso`, and `neariso_path` remain
+available for compatibility.
 
 
 ## References
 
-+ R. E. Barlow, D. J. Bartholomew, J. M. Bremner and H. D. Brunk: Statistical Inference Under Order Restrictions (1972)
-+ P. Groeneboom and G. Jongbloed: Nonparametric Estimation Under Shape Constraints (2014)
-+ T. Matsuda and Y. Miyatake: Generalized nearly isotonic regression (2022)
-+ T. Robertson, F. T. Wright and R. L. Dykstra: Order Restricted Statistical Inference (1988)
-+ R. J. Tibshirani, H. Hoefling and R. Tibshirani: Nearly-isotonic regression (2011)
-+ C. van Eeden: Restricted Parameter Space Estimation Problems (2006)
-
-
+- R. E. Barlow, D. J. Bartholomew, J. M. Bremner and H. D. Brunk: *Statistical Inference Under Order Restrictions* (1972)
+- P. Groeneboom and G. Jongbloed: *Nonparametric Estimation Under Shape Constraints* (2014)
+- T. Matsuda and Y. Miyatake: “Piecewise monotone estimation in one-parameter exponential families” (2025)
+- T. Robertson, F. T. Wright and R. L. Dykstra: *Order Restricted Statistical Inference* (1988)
+- R. J. Tibshirani, H. Hoefling and R. Tibshirani: “Nearly-isotonic regression” (2011)
+- C. van Eeden: *Restricted Parameter Space Estimation Problems* (2006)

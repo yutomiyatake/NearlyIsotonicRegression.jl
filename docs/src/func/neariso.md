@@ -20,7 +20,15 @@ where ``w_i > 0`` ``(i=1,\dots,n)``.
 
 The function ```neariso``` solves these problems.
 Note that the result ``\hat{\mu} = (\hat{\mu}_1,\dots, \hat{\mu}_n)`` consists of several clusters. 
-This function outputs ``\hat{\mu}`` and the number of clusters. 
+This function outputs ``\hat{\mu}`` and the number of clusters.
+
+The descriptive public names are `nearly_isotonic_regression` and
+`nearly_isotonic_path`; the shorter names remain available for compatibility.
+
+```@docs
+nearly_isotonic_regression
+nearly_isotonic_path
+```
 
 ```@docs
 neariso

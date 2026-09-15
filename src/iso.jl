@@ -1,4 +1,28 @@
+export isotonic_regression!, isotonic_regression
 export iso!, iso, iso_Normal!, iso_Normal, iso_Binomial!, iso_Binomial, iso_Poisson!, iso_Poisson, iso_Chisq!, iso_Chisq
+
+function _require_same_length(x::AbstractVector, y::AbstractVector, y_name::AbstractString)
+    length(x) == length(y) ||
+        throw(DimensionMismatch("Lengths of input vector and $(y_name) mismatch"))
+    return nothing
+end
+
+function _require_finite(x::AbstractVector, name::AbstractString)
+    all(isfinite, x) || throw(DomainError(x, "Every element of $(name) must be finite"))
+    return nothing
+end
+
+function _require_positive(x::AbstractVector, name::AbstractString)
+    all(value -> isfinite(value) && value > 0, x) ||
+        throw(DomainError(x, "Every element of $(name) must be positive and finite"))
+    return nothing
+end
+
+function _require_nonnegative(x::AbstractVector, name::AbstractString)
+    all(value -> isfinite(value) && value >= 0, x) ||
+        throw(DomainError(x, "Every element of $(name) must be nonnegative and finite"))
+    return nothing
+end
 
 """
     iso!(x::Vector, w::Union{Vector, Nothing}=nothing) -> x
@@ -15,22 +39,19 @@ Perform isotonic regression
 # Algorithm
 - PAVA (Pool-Adjacent-Violators algorithm)
 """
-function iso!(x::Vector{<:AbstractFloat}, w::Union{Nothing,Vector{<:Real}}=nothing)
+function iso!(x::AbstractVector{<:AbstractFloat}, w::Union{Nothing,AbstractVector{<:Real}}=nothing)
     
     n = length(x)
 
-    if typeof(x) == Vector{Int64}
-        x = map(Float64, x)
-    end
-
     # Basic checks
-    if n == 1
-        return x
+    _require_finite(x, "x")
+    if w !== nothing
+        _require_same_length(x, w, "weights")
+        _require_positive(w, "w")
     end
 
-    if w !== nothing
-        length(w) == n || throw(DimensionMismatch("Lengths of input vector and weights mismatch"))
-        minimum(w) > 0 || throw(DomainError(w, "Every element of w must be positive"))
+    if n <= 1
+        return x
     end
 
   
@@ -74,14 +95,14 @@ end
 
 Same as ```iso!``` with ```w=Nothing```, but allocates an output vector ```y```.
 """
-iso(x::Vector) = iso!(copy(x))
+iso(x::AbstractVector{<:Real}) = iso!(collect(float.(x)))
 
 """
     iso(x::Vector, w::Vector) -> y
 
 Same as ```iso!```, but allocates an output vector ```y```.
 """
-iso(x::Vector, w::Vector) = iso!(copy(x), w)
+iso(x::AbstractVector{<:Real}, w::AbstractVector{<:Real}) = iso!(collect(float.(x)), w)
 
 
 """
@@ -97,8 +118,8 @@ Perform isotonic regression (Normal)
 - `x`: output vector, which is monotone
 
 """
-iso_Normal!(x::Vector, variance::Vector) = iso!(x, 1 ./variance)
-iso_Normal!(x::Vector) = iso!(x)
+iso_Normal!(x::AbstractVector{<:AbstractFloat}, variance::AbstractVector{<:Real}) = iso!(x, 1 ./ variance)
+iso_Normal!(x::AbstractVector{<:AbstractFloat}) = iso!(x)
 
 
 """
@@ -106,8 +127,20 @@ iso_Normal!(x::Vector) = iso!(x)
 
 Same as ```iso_Normal!```, but allocates an output vector ```y```.
 """
-iso_Normal(x::Vector, variance::Vector) = iso(x, 1 ./variance)
-iso_Normal(x::Vector) = iso(x)
+iso_Normal(x::AbstractVector{<:Real}, variance::AbstractVector{<:Real}) = iso(x, 1 ./ variance)
+iso_Normal(x::AbstractVector{<:Real}) = iso(x)
+
+function _validate_binomial(success::AbstractVector{<:Real}, trial::AbstractVector{<:Real})
+    _require_same_length(success, trial, "trials")
+    _require_positive(trial, "trial")
+    _require_nonnegative(success, "success")
+    all(isinteger, trial) || throw(DomainError(trial, "Every element of trial must be an integer"))
+    all(isinteger, success) ||
+        throw(DomainError(success, "Every element of success must be an integer"))
+    all(success .<= trial) ||
+        throw(DomainError(success, "Every element of success must not exceed trial"))
+    return nothing
+end
 
 """
     iso_Binomial!(success::Vector, trial::Vector) -> success
@@ -122,14 +155,21 @@ Perform isotonic regression (Binomial)
 - `success`: output vector, which is monotone
 
 """
-iso_Binomial!(success::Vector, trial::Vector) = iso!(success./trial, trial)
+function iso_Binomial!(success::AbstractVector{<:AbstractFloat}, trial::AbstractVector{<:Real})
+    _validate_binomial(success, trial)
+    success ./= trial
+    return iso!(success, trial)
+end
 
 """
     iso_Binomial(success::Vector, trial::Vector) -> x
 
 Same as ```iso_Binomial!```, but allocates an output vector ```x```.
 """
-iso_Binomial(success::Vector, trial::Vector) = iso(success./trial, trial)
+function iso_Binomial(success::AbstractVector{<:Real}, trial::AbstractVector{<:Real})
+    _validate_binomial(success, trial)
+    return iso(float.(success) ./ trial, trial)
+end
 
 """
     iso_Poisson!(x::Vector) -> x
@@ -143,14 +183,27 @@ Perform isotonic regression (Poisson)
 - `x`: output vector, which is monotone
 
 """
-iso_Poisson!(x::Vector) = iso!(Vector{Float64}(x))
+function iso_Poisson!(x::AbstractVector{<:AbstractFloat})
+    _require_nonnegative(x, "x")
+    return iso!(x)
+end
 
 """
     iso_Poisson(x::Vector) -> y
 
 Same as ```iso_Poisson!```, but allocates an output vector ```y```.
 """
-iso_Poisson(x::Vector) = iso(Vector{Float64}(x))
+function iso_Poisson(x::AbstractVector{<:Real})
+    _require_nonnegative(x, "x")
+    return iso(x)
+end
+
+function _validate_chisq(x::AbstractVector{<:Real}, d::AbstractVector{<:Real})
+    _require_same_length(x, d, "degrees of freedom")
+    _require_nonnegative(x, "x")
+    _require_positive(d, "d")
+    return nothing
+end
 
 """
     iso_Chisq!(x::Vector, d::Vector) -> x
@@ -165,11 +218,35 @@ Perform isotonic regression (Chisq)
 - `x`: output vector, which is monotone
 
 """
-iso_Chisq!(x::Vector, d::Vector) = iso!(x./d, d/2)
+function iso_Chisq!(x::AbstractVector{<:AbstractFloat}, d::AbstractVector{<:Real})
+    _validate_chisq(x, d)
+    x .= 2 .* x ./ d
+    return iso!(x, d ./ 2)
+end
 
 """
     iso_Chisq(x::Vector, d::Vector) -> y
 
 Same as ```iso_Chisq!```, but allocates an output vector ```y```.
 """
-iso_Chisq(x::Vector, d::Vector) = iso(x./d, d/2)
+function iso_Chisq(x::AbstractVector{<:Real}, d::AbstractVector{<:Real})
+    _validate_chisq(x, d)
+    return iso(2 .* float.(x) ./ d, d ./ 2)
+end
+
+"""
+    isotonic_regression!(x[, w]) -> x
+
+Descriptive alias for [`iso!`](@ref). The input `x` is modified in place.
+"""
+isotonic_regression!(x::AbstractVector{<:AbstractFloat}) = iso!(x)
+isotonic_regression!(x::AbstractVector{<:AbstractFloat}, w::AbstractVector{<:Real}) =
+    iso!(x, w)
+
+"""
+    isotonic_regression(x[, w]) -> y
+
+Descriptive alias for [`iso`](@ref). A new vector is returned.
+"""
+isotonic_regression(x::AbstractVector{<:Real}) = iso(x)
+isotonic_regression(x::AbstractVector{<:Real}, w::AbstractVector{<:Real}) = iso(x, w)

@@ -1,3 +1,6 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-IsoFuns = "8ffeb364-5e46-4a19-b908-271cdb64df64"
+NearlyIsotonicRegression = "8ffeb364-5e46-4a19-b908-271cdb64df64"
+
+[compat]
+Documenter = "1"

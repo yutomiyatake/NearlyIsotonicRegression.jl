@@ -20,6 +20,14 @@ where ``w_i > 0`` ``(i=1,\dots,n)``.
 
 The function ```iso``` or ```iso!``` solves these problems using the algorithm called PAVA (Pool-Adjacent-Violators algorithm).
 
+The descriptive public names are `isotonic_regression` and
+`isotonic_regression!`; the shorter names remain available for compatibility.
+
+```@docs
+isotonic_regression
+isotonic_regression!
+```
+
 ```@docs
 iso
 ```
@@ -178,8 +186,8 @@ p_i(x_i\mid s_i) = \frac{1}{\Gamma(d_i/2) (2s_i)^{d_i/2}} x^{d_i/2-1} \mathrm{e}
 Since 
 ```math
 \begin{aligned}
-\log p_i(x_i\mid s_i) &= -\frac{1}{2s_i} x_i - \frac{d_i}{2} \log (2s_i) + \bigg( \frac{d_i}{2}-1\bigg)x_i - \log \Gamma (d_i/2)  \\
-&= \theta_i x_i - \frac{d_i}{2} (-\log (-\theta_i)) + \bigg( \frac{d_i}{2}-1\bigg)x_i - \log \Gamma (d_i/2) ,
+\log p_i(x_i\mid s_i) &= -\frac{1}{2s_i} x_i - \frac{d_i}{2} \log (2s_i) + \bigg( \frac{d_i}{2}-1\bigg)\log x_i - \log \Gamma (d_i/2)  \\
+&= \theta_i x_i - \frac{d_i}{2} (-\log (-\theta_i)) + \bigg( \frac{d_i}{2}-1\bigg)\log x_i - \log \Gamma (d_i/2) ,
 \end{aligned}
 ```
 we can infer the following:
