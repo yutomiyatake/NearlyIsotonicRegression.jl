@@ -17,10 +17,6 @@ From the Julia package prompt, run:
 pkg> add NearlyIsotonicRegression
 ```
 
-Until the first General-registry release is available, install the development
-version with
-`pkg> add https://github.com/yutomiyatake/NearlyIsotonicRegression.jl`.
-
 ## Simple examples
 
 ```julia
